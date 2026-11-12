@@ -1,0 +1,23 @@
+/* Estilos mínimos del conector: heredan la tipografía y los colores del tema (se pisan con las clases acwc-*). */
+.acwc-register { margin: 1.5em 0; }
+.acwc-form { display: grid; gap: 14px; padding: 20px; border: 1px solid rgba(127, 127, 127, 0.25); border-radius: 12px; }
+.acwc-form h3 { margin: 0; }
+.acwc-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.acwc-field { display: grid; gap: 4px; font-size: 0.95em; }
+.acwc-form input:not([type=checkbox]), .acwc-form select { width: 100%; padding: 9px 10px; border: 1px solid rgba(127, 127, 127, 0.4); border-radius: 8px; font: inherit; box-sizing: border-box; }
+.acwc-attendees { display: grid; gap: 10px; }
+.acwc-attendee { display: grid; gap: 8px; grid-template-columns: 1.3fr 1fr 1fr auto; align-items: center; }
+.acwc-check { display: flex; gap: 6px; align-items: center; font-size: 0.95em; }
+.acwc-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.acwc-button { padding: 11px 20px; border: 0; border-radius: 10px; background: #5b4bdb; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.acwc-button[disabled] { opacity: 0.6; cursor: wait; }
+.acwc-link { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; justify-self: start; }
+.acwc-muted { opacity: 0.7; font-size: 0.9em; }
+.acwc-notice { padding: 12px 14px; border-radius: 10px; background: rgba(91, 75, 219, 0.08); }
+.acwc-error { padding: 10px 12px; border-radius: 8px; background: #fde8eb; color: #b42335; margin: 0; }
+.acwc-trap { position: absolute; left: -10000px; }
+.acwc-events { list-style: none; padding: 0; display: grid; gap: 12px; }
+.acwc-event { display: grid; gap: 2px; padding: 14px; border: 1px solid rgba(127, 127, 127, 0.25); border-radius: 10px; }
+.acw-tickets { width: 100%; border-collapse: collapse; }
+.acw-tickets th, .acw-tickets td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(127, 127, 127, 0.2); }
+@media (max-width: 600px) { .acwc-attendee { grid-template-columns: 1fr; } }
