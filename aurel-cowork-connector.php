@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Aurel Cowork Conector
  * Description:       Publica en este sitio los eventos del coworking cargados en Aurel Cowork (una página por evento, con campos para Elementor y JetEngine) y suma el formulario de inscripción.
- * Version:           0.1.0
+ * Version:           0.2.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Aurel Media
@@ -17,7 +17,7 @@
  */
 defined('ABSPATH') || exit;
 
-define('ACWC_VERSION', '0.1.0');
+define('ACWC_VERSION', '0.2.0');
 define('ACWC_FILE', __FILE__);
 define('ACWC_DIR', plugin_dir_path(__FILE__));
 define('ACWC_URL', plugin_dir_url(__FILE__));

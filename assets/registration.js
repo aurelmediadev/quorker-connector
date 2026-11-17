@@ -60,16 +60,22 @@
     var phone = el('input', { name: 'phone', maxlength: '50', autocomplete: 'tel' });
     var consent = el('input', { type: 'checkbox', name: 'marketing_consent' });
     var trap = el('input', { name: 'website', tabindex: '-1', autocomplete: 'off' });
+    var coupon = el('input', { name: 'coupon', maxlength: '40', autocomplete: 'off' });
 
     function option(t) {
-      return t.name + ' · ' + money(t.price_cents) + (t.members_only ? ' (socios)' : '') + (t.left !== null ? ' · quedan ' + t.left : '');
+      return t.name + ' · ' + money(t.price_cents) + (t.promo_label ? ' · ' + t.promo_label : '') + (t.members_only ? ' (socios)' : '') + (t.left !== null ? ' · quedan ' + t.left : '');
     }
 
     function total() {
+      // Con las promos por cantidad (2x1, 50 % en la segunda): cada N-ésima entrada de su tipo.
       var sum = 0;
+      var seen = {};
       list.querySelectorAll('select').forEach(function (select) {
         var type = types.filter(function (t) { return String(t.id) === select.value; })[0];
-        sum += type ? type.price_cents : 0;
+        if (!type) return;
+        seen[type.id] = (seen[type.id] || 0) + 1;
+        var promo = type.promo && seen[type.id] % type.promo.every === 0;
+        sum += promo ? Math.round(type.price_cents * (100 - type.promo.percent) / 100) : type.price_cents;
       });
       totalEl.textContent = 'Total: ' + money(sum);
       submit.textContent = sum > 0 ? 'Inscribirme y pagar' : 'Inscribirme';
@@ -101,6 +107,7 @@
       add,
       el('div', { class: 'acwc-grid' }, [field('Nombre', first), field('Apellido', last), field('Email', email), field('Teléfono (opcional)', phone)]),
       el('div', { class: 'acwc-trap', 'aria-hidden': 'true' }, [trap]),
+      field('¿Tenés un cupón? (opcional)', coupon),
       el('label', { class: 'acwc-check' }, [consent, el('span', { text: ' Quiero recibir novedades' + (site ? ' de ' + site : '') })]),
       error,
       el('div', { class: 'acwc-actions' }, [submit, totalEl]),
@@ -123,7 +130,7 @@
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           first_name: first.value, last_name: last.value, email: email.value, phone: phone.value, website: trap.value,
-          marketing_consent: consent.checked, tickets: tickets,
+          marketing_consent: consent.checked, tickets: tickets, coupon: coupon.value.trim() || null,
         }),
       })
         .then(function (res) {
