@@ -3,7 +3,7 @@
 defined('ABSPATH') || exit;
 
 /**
- * La API pública del coworking en Aurel Cowork (solo lectura, sin claves: son datos públicos).
+ * La API pública del coworking en Quorker (solo lectura, sin claves: son datos públicos).
  */
 final class ACWC_Api
 {
@@ -14,7 +14,7 @@ final class ACWC_Api
     {
         $base = ACWC_Settings::get()['api_url'];
         if ($base === '') {
-            return new WP_Error('acwc_no_url', 'Falta la dirección del coworking en Ajustes → Aurel Cowork.');
+            return new WP_Error('acwc_no_url', 'Falta la dirección del coworking en Ajustes → Quorker.');
         }
         $response = wp_remote_get($base.'/api/v1/public/'.ltrim($path, '/'), [
             'timeout' => 15,
@@ -26,7 +26,7 @@ final class ACWC_Api
         $code = wp_remote_retrieve_response_code($response);
         $body = json_decode(wp_remote_retrieve_body($response), true);
         if ($code !== 200 || ! is_array($body)) {
-            return new WP_Error('acwc_http', sprintf('Aurel Cowork respondió %d.', $code));
+            return new WP_Error('acwc_http', sprintf('Quorker respondió %d.', $code));
         }
 
         return $body;

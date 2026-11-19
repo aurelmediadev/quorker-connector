@@ -9,7 +9,8 @@
 .acwc-attendee { display: grid; gap: 8px; grid-template-columns: 1.3fr 1fr 1fr auto; align-items: center; }
 .acwc-check { display: flex; gap: 6px; align-items: center; font-size: 0.95em; }
 .acwc-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-.acwc-button { padding: 11px 20px; border: 0; border-radius: 10px; background: #5b4bdb; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.acwc-button, a.acwc-button { display: inline-block; padding: 11px 20px; border: 0; border-radius: 10px; background: var(--acwc-accent, #5b4bdb); color: #fff; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
+.acwc-button:hover { filter: brightness(1.08); color: #fff; }
 .acwc-button[disabled] { opacity: 0.6; cursor: wait; }
 .acwc-link { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; justify-self: start; }
 .acwc-muted { opacity: 0.7; font-size: 0.9em; }
@@ -18,6 +19,25 @@
 .acwc-trap { position: absolute; left: -10000px; }
 .acwc-events { list-style: none; padding: 0; display: grid; gap: 12px; }
 .acwc-event { display: grid; gap: 2px; padding: 14px; border: 1px solid rgba(127, 127, 127, 0.25); border-radius: 10px; }
-.acw-tickets { width: 100%; border-collapse: collapse; }
-.acw-tickets th, .acw-tickets td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(127, 127, 127, 0.2); }
-@media (max-width: 600px) { .acwc-attendee { grid-template-columns: 1fr; } }
+.acw-tickets, .acw-rates { width: 100%; border-collapse: collapse; }
+.acw-tickets th, .acw-tickets td, .acw-rates th, .acw-rates td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(127, 127, 127, 0.2); }
+
+/* Tarjetas de espacios y planes ([quorker_espacios], [quorker_planes]). */
+.acwc-cards { display: grid; gap: 20px; grid-template-columns: repeat(var(--acwc-columns, 3), minmax(0, 1fr)); margin: 1.5em 0; }
+.acwc-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(127, 127, 127, 0.25); border-radius: 12px; }
+.acwc-card__image { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.acwc-card__body { display: flex; flex: 1; flex-direction: column; gap: 6px; padding: 16px; }
+.acwc-card__body p { margin: 0; }
+.acwc-card__title { margin: 0; font-size: 1.15em; }
+.acwc-card__title a { color: inherit; text-decoration: none; }
+.acwc-card__price { font-weight: 600; }
+.acwc-card .acwc-actions { margin-top: auto; padding-top: 10px; }
+.acwc-plan__price strong { font-size: 1.5em; }
+.acwc-plan__list { margin: 4px 0 0; padding-left: 18px; }
+.acwc-gallery { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); margin: 1em 0; }
+.acwc-gallery img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
+.acwc-amenities { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+.acwc-amenities li { padding: 4px 10px; border: 1px solid rgba(127, 127, 127, 0.3); border-radius: 999px; font-size: 0.9em; }
+
+@media (max-width: 900px) { .acwc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .acwc-attendee, .acwc-cards { grid-template-columns: 1fr; } }

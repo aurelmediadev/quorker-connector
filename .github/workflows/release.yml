@@ -1,0 +1,52 @@
+name: Release
+
+# Al subir una etiqueta vX.Y.Z: revisa la sintaxis, controla que la etiqueta coincida con la versión
+# del plugin, arma quorker-connector.zip (con la carpeta quorker-connector/ adentro) y lo publica como
+# release. Los sitios con el plugin ven la actualización en WordPress → Plugins.
+#
+# Link fijo a la última versión:
+#   https://github.com/aurelmediadev/quorker-connector/releases/latest/download/quorker-connector.zip
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0', '8.3']
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Sintaxis de PHP
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+  release:
+    needs: lint
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: La etiqueta coincide con la versión del plugin
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          HEADER=$(sed -n 's/^ \* Version: *//p' quorker-connector.php | tr -d '[:space:]')
+          CONSTANT=$(sed -n "s/^define('ACWC_VERSION', '\(.*\)');/\1/p" quorker-connector.php)
+          echo "Etiqueta $TAG · encabezado $HEADER · constante $CONSTANT"
+          test "$TAG" = "$HEADER" && test "$TAG" = "$CONSTANT"
+      - name: Armar el zip
+        run: git archive --format=zip --prefix=quorker-connector/ -o quorker-connector.zip HEAD
+      - name: Publicar la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" quorker-connector.zip --title "$GITHUB_REF_NAME" --generate-notes

@@ -3,9 +3,10 @@
 defined('ABSPATH') || exit;
 
 /**
- * Aviso de Aurel Cowork: POST /wp-json/aurel-cowork/v1/webhook, firmado con la clave del conector
+ * Aviso de Quorker: POST /wp-json/aurel-cowork/v1/webhook, firmado con la clave del conector
  * (X-Aurel-Signature: sha256=HMAC del cuerpo). Solo dice que algo cambió: el plugin vuelve a leer
- * la API pública. Sin firma válida, 401.
+ * la API pública. Sin firma válida, 401. (La ruta y el encabezado conservan el nombre de la 0.2,
+ * que es el que usa Quorker.)
  */
 final class ACWC_Webhook
 {
@@ -32,7 +33,7 @@ final class ACWC_Webhook
         if (($payload['type'] ?? '') === 'ping') {
             return new WP_REST_Response(['ok' => true, 'version' => ACWC_VERSION]);
         }
-        $result = ACWC_Events::sync();
+        $result = ACWC_Sync::all();
 
         return new WP_REST_Response($result, $result['ok'] ? 200 : 502);
     }

@@ -1,5 +1,5 @@
 /*
- * Formulario de inscripción de Aurel Cowork ([aurel_evento_inscripcion]). Lee el evento en vivo de la
+ * Formulario de inscripción de Quorker ([quorker_evento_inscripcion]). Lee el evento en vivo de la
  * API pública del coworking (entradas a la venta y lugares) y manda la inscripción directo allá. Si
  * hay que pagar, lleva a Mercado Pago; si no, a la página con las entradas.
  */

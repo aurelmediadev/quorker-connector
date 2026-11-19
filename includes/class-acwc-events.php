@@ -3,7 +3,7 @@
 defined('ABSPATH') || exit;
 
 /**
- * Las páginas de eventos ("acw_event"): una entrada por evento publicado en Aurel Cowork, con su
+ * Las páginas de eventos ("acw_event"): una entrada por evento publicado en Quorker, con su
  * texto, su imagen destacada y estos campos (para el Dynamic Field de JetEngine, fuente "Meta Data"):
  *
  *   acw_event_slug, acw_starts_at, acw_ends_at (UTC), acw_date, acw_date_label, acw_time_label,
@@ -19,8 +19,6 @@ final class ACWC_Events
 {
     public const POST_TYPE = 'acw_event';
 
-    public const CRON_HOOK = 'acwc_sync_events';
-
     private const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
     private const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -34,7 +32,6 @@ final class ACWC_Events
                 flush_rewrite_rules();
             }
         }, 99);
-        add_action(self::CRON_HOOK, [self::class, 'sync']);
         // El archivo de eventos: los próximos primero, por fecha del evento.
         add_action('pre_get_posts', static function (WP_Query $query): void {
             if (! is_admin() && $query->is_main_query() && $query->is_post_type_archive(self::POST_TYPE)) {
@@ -43,7 +40,7 @@ final class ACWC_Events
                 $query->set('order', 'ASC');
             }
         });
-        // No se editan desde WordPress: la fuente es Aurel Cowork.
+        // No se editan desde WordPress: la fuente es Quorker.
         add_filter('user_has_cap', [self::class, 'read_only'], 10, 3);
     }
 
@@ -85,19 +82,15 @@ final class ACWC_Events
     }
 
     /**
+     * Lo llama ACWC_Sync (que guarda el resultado de todo junto).
+     *
      * @return array{ok: bool, count: int, error: ?string}
      */
     public static function sync(): array
     {
-        if (! defined('ACWC_SYNCING')) {
-            define('ACWC_SYNCING', true);
-        }
         $events = ACWC_Api::get('events');
         if (is_wp_error($events)) {
-            $result = ['ok' => false, 'count' => 0, 'error' => $events->get_error_message()];
-            update_option('acwc_last_sync', $result + ['at' => time()], false);
-
-            return $result;
+            return ['ok' => false, 'count' => 0, 'error' => $events->get_error_message()];
         }
 
         $seen = [];
@@ -121,10 +114,7 @@ final class ACWC_Events
             }
         }
 
-        $result = ['ok' => true, 'count' => count($seen), 'error' => null];
-        update_option('acwc_last_sync', $result + ['at' => time()], false);
-
-        return $result;
+        return ['ok' => true, 'count' => count($seen), 'error' => null];
     }
 
     /**
@@ -208,22 +198,15 @@ final class ACWC_Events
 
     private static function money(int $cents): string
     {
-        return '$ '.number_format($cents / 100, $cents % 100 === 0 ? 0 : 2, ',', '.');
+        return ACWC_Format::money($cents);
     }
 
     /** La imagen del evento como imagen destacada (se baja una sola vez por imagen). */
     private static function image(int $postId, string $url): void
     {
-        if ($url === '' || get_post_meta($postId, 'acw_image_source', true) === $url) {
-            return;
-        }
-        require_once ABSPATH.'wp-admin/includes/media.php';
-        require_once ABSPATH.'wp-admin/includes/file.php';
-        require_once ABSPATH.'wp-admin/includes/image.php';
-        $attachment = media_sideload_image($url, $postId, null, 'id');
-        if (! is_wp_error($attachment)) {
-            set_post_thumbnail($postId, (int) $attachment);
-            update_post_meta($postId, 'acw_image_source', $url);
+        $attachment = ACWC_Media::attachment($url, $postId);
+        if ($attachment !== null) {
+            set_post_thumbnail($postId, $attachment);
         }
     }
 }
